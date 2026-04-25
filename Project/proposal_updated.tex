@@ -1,0 +1,254 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+\pagenumbering{roman}
+
+% ── Title block ───────────────────────────────────────────────────────────────
+\begin{center}
+  {\large Data Mining BSS 2026}\\[1.5cm]
+  {\LARGE\bfseries Predicting Game Success on the Steam Platform}\\[1cm]
+  Team 9\\
+  Brewed Clusters\\[0.3cm]
+  Satwik Kumar Lohani\\
+  Arpitha Shivaprasad Kori\\
+  Zubair Ashfaq\\
+  Beyza Ünlü\\
+  Muhammad Sameer Siddiqui\\
+  Esha Raheel\\[0.5cm]
+  April 2026\\[2cm]
+  \small Submitted to\\
+  Data and Web Science Group\\
+  University of Mannheim
+\end{center}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Introduction to the task}
+
+The Steam marketplace hosts over 50{,}000 active titles, making it one of the most
+competitive digital distribution platforms in the world. Each year, thousands of new
+games are released, yet the majority receive little to no player attention. Game
+developers and publishers routinely face high-stakes decisions about genre, pricing,
+and release timing with limited quantitative guidance.
+
+This raises a non-trivial prediction challenge: a game's reception is not simply
+determined by its genre or price alone. The interaction between content type, community
+tags, platform availability, and pricing creates a complex, high-dimensional signal
+that is difficult to reason about intuitively. The goal of this project is to
+\textbf{predict whether a Steam game will receive a predominantly positive or negative
+review outcome} based on its observable metadata attributes such as genre, price,
+tags, and platform availability.
+
+Beyond prediction, we aim to produce interpretable insight --- identifying which
+attributes are most strongly associated with positive reception using SHAP values
+and feature importances, providing actionable guidance for developers making design
+and pricing decisions.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{What data will we use?}
+
+\begin{itemize}
+  \item \textbf{Dataset:} Steam Games Dataset
+  \item \textbf{Source:} Kaggle --- FronkonGames \footnote{\url{https://www.kaggle.com/fronkongames/steam-games-dataset}}, last updated 2024
+  \item \textbf{Data Retrieval:}
+  \begin{itemize}
+    \item The dataset contains metadata for approximately 122{,}611 Steam game entries
+          retrieved via the Steam API and SteamSpy.
+    \item Games with zero user reviews cannot be assigned a reliable label and will
+          be excluded. We use the remaining games with at least one review for
+          classification.
+    \item The binary target label is derived from the review ratio:
+          \texttt{review\_ratio} $=$ Positive $\div$ (Positive + Negative).
+          A game is labelled \textbf{Good} if \texttt{review\_ratio} $\geq$ 0.70,
+          and \textbf{Bad} otherwise. Class imbalance will be handled via SMOTE
+          oversampling and \texttt{class\_weight=`balanced'}.
+  \end{itemize}
+  \item \textbf{Feature Selection:} Table~\ref{tab:features} describes the features
+        used in our classification task.
+\end{itemize}
+
+\begin{center}
+\begin{longtable}{@{} p{4.2cm} p{2.5cm} p{7.8cm} @{}}
+\caption{Description of features used in the classification task}
+\label{tab:features}\\
+\toprule
+\textbf{Feature} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Feature} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\small\itshape continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Price                          & Numeric     & Listed price in USD; 0 for free-to-play titles \\
+Release era (derived)          & Categorical & Release year binned into era buckets (pre-2015, 2015--2019, 2020+) \\
+Genres                         & Multi-value & Steam genre labels (e.g., Action, Indie, RPG); binarised via \texttt{MultiLabelBinarizer} \\
+Tags (top-50)                  & Multi-value & User-defined gameplay tags; top 50 by frequency retained as binary features \\
+Categories                     & Multi-value & Feature labels (e.g., Single-player, Co-op, VR); binarised \\
+Achievements                   & Numeric     & Number of in-game achievements \\
+Average playtime               & Numeric     & Average total playtime across all owners (minutes) \\
+Recommendations                & Numeric     & Number of Steam recommendations \\
+Windows / Mac / Linux          & Boolean     & Platform availability flags \\
+Number of languages (derived)  & Numeric     & Count of supported languages \\
+Required age                   & Numeric     & Minimum age rating \\
+DLC count                      & Numeric     & Number of downloadable content packs \\
+\texttt{review\_ratio} (derived) & Numeric   & Positive $\div$ (Positive + Negative); used to construct the target \\
+\texttt{label} (target)        & Binary      & \textbf{Good} if \texttt{review\_ratio} $\geq$ 0.70, else \textbf{Bad} \\
+\end{longtable}
+\end{center}
+
+\noindent\textit{Note: Raw text fields (game name, developer, publisher) are not used
+directly as features. Free-text carries little transferable signal across games and
+would require NLP treatment beyond the scope of this project.}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{How will we solve the problem?}
+
+\subsection{Related Work}
+
+Several public analyses on the same Kaggle dataset have attempted to predict Steam
+game reception using review-based labels. Prior approaches have largely relied on
+simple feature sets (price, genre counts) with Logistic Regression or Random Forest,
+reporting accuracy as the primary metric --- which is misleading under class imbalance.
+Our work improves on this by: (1) applying a corrected CSV loading pipeline that
+fixes a known column-misalignment bug in the raw data, (2) engineering richer
+features from multi-value tag and genre fields, and (3) evaluating under macro F1
+and Precision-Recall AUC, which are more appropriate for imbalanced binary
+classification.
+
+\subsection{Data Preprocessing}
+
+\begin{itemize}
+  \item \textbf{Removing unlabelled games:} Games with zero total reviews are excluded,
+        as no label can be derived for them.
+  \item \textbf{Parsing multi-value fields:} Genre, tag, and category fields are
+        stored as comma-separated strings and are exploded into binary indicator
+        columns using \texttt{MultiLabelBinarizer}.
+  \item \textbf{Handling missing values:} Median imputation is applied for missing
+        numeric values. Columns with very high missing rates that carry no predictive
+        signal are dropped entirely.
+  \item \textbf{Normalising numerical data:} Price is log-transformed to reduce right
+        skew caused by the prevalence of free-to-play titles. All continuous features
+        are standardised using \texttt{StandardScaler}.
+  \item \textbf{Handling class imbalance:} SMOTE oversampling and
+        \texttt{class\_weight=`balanced'} are used to address the imbalance between
+        well-received and poorly-received games.
+  \item \textbf{Reproducibility:} The cleaned dataset is exported to Parquet format
+        to ensure consistent input across all notebooks.
+\end{itemize}
+
+\subsection{Exploratory Data Analysis}
+
+Before modelling, the following analyses are planned to understand the data and
+guide preprocessing decisions:
+
+\begin{itemize}
+  \item Distribution of review ratios and visual assessment of class balance
+  \item Price distribution stratified by free-to-play vs.\ paid games
+  \item Frequency distribution of top genres and user-defined tags
+  \item Correlation heatmap across all numeric features
+  \item Outlier identification in review counts and playtime using the IQR method
+\end{itemize}
+
+\subsection{Algorithms}
+
+\subsubsection{Classification Models (Predict Review Outcome)}
+
+\begin{itemize}
+  \item \textbf{Majority Class Classifier:} A na\"{i}ve baseline that always predicts
+        the dominant class. Establishes a lower performance bound.
+  \item \textbf{Logistic Regression (L2):} A linear and interpretable model whose
+        coefficient signs reveal which features push a game toward a Good or Bad
+        prediction.
+  \item \textbf{Random Forest:} An ensemble model that captures non-linear feature
+        interactions and provides built-in feature importances for interpretability.
+  \item \textbf{XGBoost:} A gradient-boosted tree model that is robust to class
+        imbalance and is expected to achieve the highest predictive performance.
+        Hyperparameters are tuned via nested cross-validation.
+\end{itemize}
+
+\subsubsection{Feature Importance (Identify Key Success Factors)}
+
+\begin{itemize}
+  \item \textbf{Random Forest feature importances:} Global ranking of which features
+        contribute most to classification decisions, based on node impurity reduction.
+  \item \textbf{SHAP (SHapley Additive Explanations):} Applied to the XGBoost model
+        to provide both global feature importance and local explanations showing why
+        a specific game was classified as Good or Bad. This directly addresses the
+        business question by identifying which attributes developers should focus on.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{How will we measure the success?}
+
+\begin{itemize}
+  \item \textbf{Evaluation metrics and prioritisation}
+
+  Primary Metric: Macro F1-Score
+  \begin{itemize}
+    \item Why Macro F1? It averages F1 equally across both classes, preventing the
+          majority class from masking poor minority-class performance --- critical for
+          imbalanced datasets.
+    \item But: solely relying on F1 may overlook important precision-recall trade-offs.
+  \end{itemize}
+
+  \item \textbf{Additional Metrics}
+  \begin{itemize}
+    \item AUC-ROC: measures the model's ability to discriminate between classes
+          across all decision thresholds.
+    \item Precision-Recall AUC: particularly informative under class imbalance, as
+          it focuses on performance on the positive (minority) class.
+    \item Confusion matrices reported per model to inspect false positive and false
+          negative trade-offs explicitly.
+    \item All metrics reported as mean $\pm$ std across 10 stratified folds.
+  \end{itemize}
+
+  \item \textbf{Hyperparameter Optimisation}
+  \begin{itemize}
+    \item Nested cross-validation: inner 3-fold loop for hyperparameter search,
+          outer 10-fold loop for unbiased final evaluation.
+    \item Key parameters tuned: regularisation strength $C$ for Logistic Regression;
+          number of estimators and maximum depth for Random Forest; learning rate,
+          maximum depth, and subsampling ratio for XGBoost.
+  \end{itemize}
+
+  \item \textbf{State-of-the-Art Comparison}
+  \begin{itemize}
+    \item Results will be compared against 2--3 public Kaggle kernels on the same
+          dataset using macro F1 and AUC-ROC as the basis for comparison.
+  \end{itemize}
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{References}
+
+\begin{enumerate}
+  \item FronkonGames, \textit{Steam Games Dataset}, Kaggle, 2024.\\
+        \url{https://www.kaggle.com/fronkongames/steam-games-dataset}
+  \item Lundberg, S.\ M., \& Lee, S.\ I.\ (2017). A unified approach to interpreting
+        model predictions. \textit{Advances in Neural Information Processing Systems}, 30.
+  \item Chen, T., \& Guestrin, C.\ (2016). XGBoost: A scalable tree boosting system.
+        \textit{Proceedings of KDD 2016}.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\end{document}
