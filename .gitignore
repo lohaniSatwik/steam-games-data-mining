@@ -5,6 +5,9 @@ Code/.venv/
 Code/Data/games.csv
 Code/Data/games.json
 
+# Generated files — run run_preprocessing.py to reproduce locally
+Code/Data/processed/
+
 # University course materials (not part of the project)
 Exercise/
 Lecture/
