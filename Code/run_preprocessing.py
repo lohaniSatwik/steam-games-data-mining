@@ -244,16 +244,16 @@ print(f'  Missing after  : {missing_after:,}')
 print('\nStep 9: Exporting to CSV...')
 os.makedirs('Data/processed', exist_ok=True)
 
-X.to_csv('Data/processed/X_classification.csv', index=False)
-y.to_frame().to_csv('Data/processed/y_classification.csv', index=False)
+df_out = X.copy()
+df_out['label'] = y.values
+df_out.to_csv('Data/processed/games_processed.csv', index=False)
 
-print(f'  Saved X : Data/processed/X_classification.csv  {X.shape}')
-print(f'  Saved y : Data/processed/y_classification.csv  {y.shape}')
+print(f'  Saved : Data/processed/games_processed.csv  {df_out.shape}')
 
 print('\n' + '='*55)
 print('  PREPROCESSING COMPLETE')
 print('='*55)
-print(f'  Final dataset size : {X.shape[0]:,} games')
+print(f'  Final dataset size : {df_out.shape[0]:,} games')
 print(f'  Feature count      : {X.shape[1]}')
 print(f'  Good (1)           : {y.sum():,} ({y.mean()*100:.1f}%)')
 print(f'  Bad  (0)           : {(y==0).sum():,} ({(1-y.mean())*100:.1f}%)')
