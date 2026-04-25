@@ -1,11 +1,12 @@
 # Virtual environment
 Code/.venv/
 
-# Raw data (too large for git)
-Data/games.csv
+# Raw data (372MB — too large for GitHub, download from Kaggle)
+Code/Data/games.csv
 
-# Processed data (reproducible from preprocessing script)
-Data/processed/
+# OS files
+.DS_Store
+Thumbs.db
 
 # Jupyter checkpoints
 **/.ipynb_checkpoints/
@@ -14,7 +15,3 @@ Data/processed/
 __pycache__/
 *.pyc
 *.pyo
-
-# OS files
-.DS_Store
-Thumbs.db

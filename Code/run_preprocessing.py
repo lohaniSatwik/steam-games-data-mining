@@ -5,6 +5,7 @@ warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 import os
+import joblib
 from collections import Counter
 from sklearn.preprocessing import MultiLabelBinarizer, StandardScaler
 
@@ -144,6 +145,10 @@ for col in numeric_cols:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
+# Metacritic score of 0 means no score exists, not a real score of 0
+# Replace 0 with NaN so it gets median-imputed with actual scores later
+df['Metacritic score'] = df['Metacritic score'].replace(0, np.nan)
+
 print('  Done.')
 
 # ── Step 8: Assemble feature matrix ──────────────────────────────────────────
@@ -177,25 +182,33 @@ missing_after = X.isnull().sum().sum()
 print(f'  Missing before : {missing_before:,}')
 print(f'  Missing after  : {missing_after:,}')
 
-# ── Step 10: Standardise continuous features ──────────────────────────────────
-print('\nStep 10: Standardising continuous features...')
+# ── Step 10: Export to Parquet ────────────────────────────────────────────────
+# NOTE: Data is saved UNSCALED intentionally.
+# Scaling must happen inside sklearn Pipelines in each modelling notebook
+# so that the scaler is fit only on training folds during cross-validation.
+# Fitting a scaler on the full dataset before splitting would leak test-set
+# statistics into the training process.
+print('\nStep 10: Exporting to Parquet...')
+os.makedirs('Data/processed', exist_ok=True)
+
+X.to_parquet('Data/processed/X_classification.parquet', index=False)
+y.to_frame().to_parquet('Data/processed/y_classification.parquet', index=False)
+
+# Save the column list so modelling notebooks know which columns to scale
 continuous_cols = [
     'log_price', 'Required age', 'DiscountDLC count', 'Achievements',
     'Average playtime forever', 'Median playtime forever',
     'Recommendations', 'Metacritic score', 'n_languages'
 ]
 continuous_cols = [c for c in continuous_cols if c in X.columns]
-scaler = StandardScaler()
-X[continuous_cols] = scaler.fit_transform(X[continuous_cols])
-print('  Done.')
 
-# ── Step 11: Export to Parquet ────────────────────────────────────────────────
-print('\nStep 11: Exporting to Parquet...')
-os.makedirs('Data/processed', exist_ok=True)
-X.to_parquet('Data/processed/X_classification.parquet', index=False)
-y.to_frame().to_parquet('Data/processed/y_classification.parquet', index=False)
-print(f'  Saved X: Data/processed/X_classification.parquet — {X.shape}')
-print(f'  Saved y: Data/processed/y_classification.parquet — {y.shape}')
+import json
+with open('Data/processed/continuous_cols.json', 'w') as f:
+    json.dump(continuous_cols, f)
+
+print(f'  Saved X : Data/processed/X_classification.parquet — {X.shape}')
+print(f'  Saved y : Data/processed/y_classification.parquet — {y.shape}')
+print(f'  Saved   : Data/processed/continuous_cols.json ({len(continuous_cols)} columns to scale)')
 
 print('\n' + '='*55)
 print('  PREPROCESSING COMPLETE')
@@ -204,4 +217,6 @@ print(f'  Final dataset size : {X.shape[0]:,} games')
 print(f'  Feature count      : {X.shape[1]}')
 print(f'  Good (1)           : {y.sum():,} ({y.mean()*100:.1f}%)')
 print(f'  Bad  (0)           : {(y==0).sum():,} ({(1-y.mean())*100:.1f}%)')
+print(f'  Data saved to      : Code/Data/processed/')
+print(f'  NOTE: Features are UNSCALED — apply StandardScaler inside CV pipelines')
 print('='*55)
