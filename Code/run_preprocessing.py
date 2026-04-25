@@ -5,7 +5,6 @@ warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 import os
-import json
 from collections import Counter
 from sklearn.preprocessing import MultiLabelBinarizer
 
@@ -241,32 +240,15 @@ missing_after = X.isnull().sum().sum()
 print(f'  Missing before : {missing_before:,}')
 print(f'  Missing after  : {missing_after:,}')
 
-# ── Step 9: Export to Parquet ─────────────────────────────────────────────────
-# WHY Parquet and not CSV?
-# Parquet preserves column data types (int, float, bool) exactly.
-# CSV saves everything as text — when you reload a CSV, you have to re-convert
-# all types again. Parquet is also ~10x smaller and faster to read.
-#
-# WHY unscaled?
-# StandardScaler (mean=0, std=1) must be fit ONLY on training data inside each
-# CV fold. If we scale the full dataset here, the model indirectly "sees" the
-# test fold statistics during training — this is called data leakage.
-# Each modelling notebook handles scaling inside its sklearn Pipeline.
-print('\nStep 9: Exporting to Parquet...')
+# ── Step 9: Export to CSV ─────────────────────────────────────────────────────
+print('\nStep 9: Exporting to CSV...')
 os.makedirs('Data/processed', exist_ok=True)
 
-X.to_parquet('Data/processed/X_classification.parquet', index=False)
-y.to_frame().to_parquet('Data/processed/y_classification.parquet', index=False)
+X.to_csv('Data/processed/X_classification.csv', index=False)
+y.to_frame().to_csv('Data/processed/y_classification.csv', index=False)
 
-# Save list of continuous columns so modelling notebooks know what to scale
-continuous_cols = [c for c in base_numeric
-                   if c not in ['Windows', 'Mac', 'Linux']]
-with open('Data/processed/continuous_cols.json', 'w') as f:
-    json.dump(continuous_cols, f)
-
-print(f'  Saved X              : Data/processed/X_classification.parquet  {X.shape}')
-print(f'  Saved y              : Data/processed/y_classification.parquet  {y.shape}')
-print(f'  Saved continuous_cols: Data/processed/continuous_cols.json      ({len(continuous_cols)} cols)')
+print(f'  Saved X : Data/processed/X_classification.csv  {X.shape}')
+print(f'  Saved y : Data/processed/y_classification.csv  {y.shape}')
 
 print('\n' + '='*55)
 print('  PREPROCESSING COMPLETE')

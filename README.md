@@ -98,4 +98,4 @@ This generates the three files in `Code/Data/processed/` that all modelling note
 - **Evaluation metric:** Macro F1-score (primary), AUC-ROC and Precision-Recall AUC (secondary)
 - **Cross-validation:** 10-fold stratified CV (outer loop); 3-fold inner loop for hyperparameter tuning
 - **Class imbalance:** 71.4% Good / 28.6% Bad — use `class_weight='balanced'` and SMOTE
-- **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` using the columns listed in `Data/processed/continuous_cols.json`
+- **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` on the continuous columns (log_price, Required age, DiscountDLC count, Achievements, Average playtime forever, Median playtime forever, Recommendations, Metacritic score, n_languages)
