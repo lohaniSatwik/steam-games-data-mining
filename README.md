@@ -66,7 +66,7 @@ python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
 
-pip install pandas numpy matplotlib seaborn scikit-learn pyarrow joblib
+pip install pandas numpy matplotlib seaborn scikit-learn
 ```
 
 ### 4. Run preprocessing
@@ -75,8 +75,17 @@ cd Code
 python run_preprocessing.py
 ```
 
-This generates the three files in `Code/Data/processed/` that all modelling notebooks depend on.
+This generates `Code/Data/processed/games_processed.csv` — a single clean file with all features and the label column that all modelling notebooks depend on.  
 **You only need to run this once.**
+
+### 5. Loading the processed data in your notebook
+```python
+import pandas as pd
+
+df = pd.read_csv('Data/processed/games_processed.csv')
+X  = df.drop(columns=['label'])
+y  = df['label']
+```
 
 ---
 
@@ -99,3 +108,5 @@ This generates the three files in `Code/Data/processed/` that all modelling note
 - **Cross-validation:** 10-fold stratified CV (outer loop); 3-fold inner loop for hyperparameter tuning
 - **Class imbalance:** 71.4% Good / 28.6% Bad — use `class_weight='balanced'` and SMOTE
 - **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` on the continuous columns (log_price, Required age, DiscountDLC count, Achievements, Average playtime forever, Median playtime forever, Recommendations, Metacritic score, n_languages)
+
+> **Note on potential leakage:** `Average playtime forever`, `Median playtime forever`, and `Recommendations` are post-release metrics — a game accumulates these *after* it has already been reviewed. They are included for now but may be worth removing in a separate model run to compare the impact. Keep this in mind during modelling.
