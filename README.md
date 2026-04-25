@@ -21,7 +21,8 @@ steam-games-data-mining/
 │
 ├── Code/
 │   ├── Data/
-│   │   └── processed/                  # Generated locally — do not commit
+│   │   └── processed/
+│   │       └── games_processed.csv         # Cleaned, model-ready dataset (18MB)
 │   │
 │   ├── section1_business_understanding.ipynb
 │   ├── section2_preprocessing.ipynb
@@ -45,17 +46,7 @@ git clone https://github.com/lohaniSatwik/steam-games-data-mining.git
 cd steam-games-data-mining
 ```
 
-### 2. Download the raw dataset
-The raw `games.csv` file (372MB) is not stored in this repository. Download it from Kaggle:
-
-> **[Steam Games Dataset – FronkonGames](https://www.kaggle.com/fronkongames/steam-games-dataset)**
-
-Place the downloaded file at:
-```
-Code/Data/games.csv
-```
-
-### 3. Set up the Python environment
+### 2. Set up the Python environment
 ```bash
 cd Code
 python -m venv .venv
@@ -69,16 +60,10 @@ source .venv/bin/activate
 pip install pandas numpy matplotlib seaborn scikit-learn
 ```
 
-### 4. Run preprocessing
-```bash
-cd Code
-python run_preprocessing.py
-```
+### 3. Load the processed data in your notebook
 
-This generates `Code/Data/processed/games_processed.csv` — a single clean file with all features and the label column that all modelling notebooks depend on.  
-**You only need to run this once.**
+`games_processed.csv` is already in the repo — no preprocessing needed. Just load it:
 
-### 5. Loading the processed data in your notebook
 ```python
 import pandas as pd
 
@@ -86,6 +71,28 @@ df = pd.read_csv('Data/processed/games_processed.csv')
 X  = df.drop(columns=['label'])
 y  = df['label']
 ```
+
+---
+
+## About the Processed Dataset
+
+| Property | Value |
+|----------|-------|
+| Games | 56,655 (filtered to ≥10 reviews) |
+| Features | 151 (numeric + binary dummies) |
+| Label | `label` — 1 = Good (≥70% positive), 0 = Bad |
+| Class balance | 71.4% Good / 28.6% Bad |
+| Missing values | None (median imputed) |
+| Scaling | Not applied — scale inside your CV pipeline |
+
+**Feature groups:**
+- 12 numeric columns (price, achievements, playtime, etc.)
+- 28 genre dummy columns (`genre_*`)
+- 58 category dummy columns (`cat_*`)
+- 50 tag dummy columns (`tag_*`) — top 50 by frequency
+- 3 release era columns (`era_*`)
+
+> **Note on potential leakage:** `Average playtime forever`, `Median playtime forever`, and `Recommendations` are post-release metrics — a game accumulates these *after* it has already been reviewed. They are included for now but consider running your model with and without them to compare the impact.
 
 ---
 
@@ -107,6 +114,4 @@ y  = df['label']
 - **Evaluation metric:** Macro F1-score (primary), AUC-ROC and Precision-Recall AUC (secondary)
 - **Cross-validation:** 10-fold stratified CV (outer loop); 3-fold inner loop for hyperparameter tuning
 - **Class imbalance:** 71.4% Good / 28.6% Bad — use `class_weight='balanced'` and SMOTE
-- **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` on the continuous columns (log_price, Required age, DiscountDLC count, Achievements, Average playtime forever, Median playtime forever, Recommendations, Metacritic score, n_languages)
-
-> **Note on potential leakage:** `Average playtime forever`, `Median playtime forever`, and `Recommendations` are post-release metrics — a game accumulates these *after* it has already been reviewed. They are included for now but may be worth removing in a separate model run to compare the impact. Keep this in mind during modelling.
+- **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` on the continuous columns: `log_price`, `Required age`, `DiscountDLC count`, `Achievements`, `Average playtime forever`, `Median playtime forever`, `Recommendations`, `Metacritic score`, `n_languages`
