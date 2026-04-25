@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IE500 Data Mining — Steam Games Project Outline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-size: 10.5pt;
+    color: #1a1a2e;
+    background: #fff;
+    line-height: 1.55;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 18mm 14mm 18mm;
+  }
+
+  /* ── Header ── */
+  .header {
+    border-bottom: 3px solid #1565c0;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0d2b6e;
+    letter-spacing: -0.3px;
+  }
+  .header .subtitle {
+    font-size: 9.5pt;
+    color: #555;
+    margin-top: 3px;
+  }
+  .header .meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 8px;
+    font-size: 9pt;
+    color: #444;
+  }
+  .header .meta span { display: flex; align-items: center; gap: 4px; }
+  .badge {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .badge.orange { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+  .badge.green  { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+
+  /* ── Section titles ── */
+  .section {
+    margin-bottom: 14px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .section-num {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #fff;
+    background: #1565c0;
+    border-radius: 3px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+  }
+  .section-num.gray   { background: #546e7a; }
+  .section-num.teal   { background: #00695c; }
+  .section-num.indigo { background: #283593; }
+  .section-num.purple { background: #6a1b9a; }
+  .section-num.amber  { background: #e65100; }
+  .section-num.slate  { background: #37474f; }
+
+  .section-title {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #0d2b6e;
+  }
+
+  .section-body {
+    background: #f8fafd;
+    border-left: 3px solid #1565c0;
+    border-radius: 0 6px 6px 0;
+    padding: 8px 12px;
+  }
+  .section-body.gray   { border-color: #546e7a; background: #f5f7f8; }
+  .section-body.teal   { border-color: #00695c; background: #f0faf8; }
+  .section-body.indigo { border-color: #283593; background: #f5f6ff; }
+  .section-body.purple { border-color: #6a1b9a; background: #fdf5ff; }
+  .section-body.amber  { border-color: #e65100; background: #fff8f5; }
+  .section-body.slate  { border-color: #37474f; background: #f5f7f8; }
+
+  /* ── Columns ── */
+  .cols { display: grid; gap: 10px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #dde4f0;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .card-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #1565c0;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .card-title.teal   { color: #00695c; }
+  .card-title.indigo { color: #283593; }
+  .card-title.purple { color: #6a1b9a; }
+  .card-title.amber  { color: #e65100; }
+  .card-title.slate  { color: #37474f; }
+
+  ul { padding-left: 16px; }
+  ul li { margin-bottom: 2px; font-size: 9.5pt; }
+  p { font-size: 9.5pt; margin-bottom: 4px; }
+
+  /* ── Checklist fix banner ── */
+  .checklist-box {
+    background: #fffde7;
+    border: 1px solid #f9a825;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 9pt;
+  }
+  .checklist-box strong { color: #e65100; }
+  .checklist-box ul { margin-top: 4px; }
+  .checklist-box li { margin-bottom: 2px; }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .tl-item {
+    background: #fff;
+    border: 1px solid #dde4f0;
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .tl-date { font-size: 8pt; font-weight: 700; color: #1565c0; }
+  .tl-label { font-size: 8pt; color: #444; margin-top: 2px; }
+
+  /* ── Team table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+    margin-top: 6px;
+  }
+  th {
+    background: #1565c0;
+    color: #fff;
+    padding: 5px 8px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td { padding: 4px 8px; border-bottom: 1px solid #e8ecf4; }
+  tr:nth-child(even) td { background: #f8fafd; }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid #e0e6f0; margin: 14px 0; }
+
+  /* ── Footer ── */
+  .footer {
+    border-top: 1px solid #cdd5e0;
+    margin-top: 18px;
+    padding-top: 7px;
+    font-size: 8pt;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; padding: 15mm 16mm 12mm 16mm; }
+  }
+
+  .note {
+    font-size: 8.5pt;
+    color: #666;
+    font-style: italic;
+    margin-top: 3px;
+  }
+  .tag {
+    display: inline-block;
+    background: #e8eaf6;
+    color: #283593;
+    border-radius: 3px;
+    padding: 0px 5px;
+    font-size: 8pt;
+    font-weight: 600;
+    margin: 1px;
+  }
+  .tag.green  { background: #e8f5e9; color: #2e7d32; }
+  .tag.red    { background: #ffebee; color: #c62828; }
+  .tag.orange { background: #fff3e0; color: #e65100; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <div class="header">
+    <h1>IE 500 Data Mining &mdash; Project Outline</h1>
+    <div class="subtitle">University of Mannheim &middot; FSS 2026 &middot; Steam Games Dataset (Kaggle)</div>
+    <div class="meta">
+      <span>Dataset: <strong>Steam Games (120k titles)</strong></span>
+      <span>Source: <strong>Kaggle &mdash; fronkongames/steam-games-dataset</strong></span>
+      <span>Outline due: <strong>April 12, 2026</strong></span>
+    </div>
+  </div>
+
+  <!-- ══ CHECKLIST NOTE ══ -->
+  <div class="checklist-box">
+    <strong>Course requirements addressed in this outline:</strong>
+    <ul>
+      <li>At least one <strong>symbolic</strong> model (Logistic Regression, Ridge/Lasso), one <strong>non-symbolic</strong> model (Random Forest, XGBoost, DBSCAN), and explicit <strong>baseline</strong> models per task</li>
+      <li><strong>State-of-the-art comparison</strong> mandatory for Kaggle datasets &mdash; included in Section 7</li>
+      <li>10-fold stratified CV &amp; nested cross-validation for hyperparameter tuning &mdash; included in Section 7</li>
+      <li>Business understanding, error analysis, and result discussion &mdash; Sections 1 &amp; 8</li>
+    </ul>
+  </div>
+
+  <!-- ══ S1: BUSINESS UNDERSTANDING ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <span class="section-title">Business Understanding</span>
+    </div>
+    <div class="section-body">
+      <p><strong>Central question:</strong> What measurable game attributes predict commercial success on Steam, and can games be grouped into meaningful market segments to inform publishing and pricing strategy?</p>
+      <div class="cols cols-2" style="margin-top:6px">
+        <div class="card">
+          <div class="card-title">Supervised Tasks</div>
+          <ul>
+            <li><strong>Classification:</strong> predict whether a game receives a positive review outcome (binary: positive/negative)</li>
+            <li><strong>Regression:</strong> estimate peak concurrent users (CCU) as a proxy for commercial reach</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Unsupervised Task</div>
+          <ul>
+            <li><strong>Clustering:</strong> discover natural game market segments based on price, playtime, genre, and review patterns</li>
+            <li>Results inform positioning decisions for new releases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S2: DATASET & EDA ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num gray">2</span>
+      <span class="section-title">Dataset &amp; Exploratory Data Analysis</span>
+    </div>
+    <div class="section-body gray">
+      <div class="cols cols-3">
+        <div class="card">
+          <div class="card-title slate">Dataset Facts</div>
+          <ul>
+            <li>~120,000 Steam game entries</li>
+            <li>Features: price, genres, tags, reviews, playtime, CCU, release date, developers</li>
+            <li>Owner ranges stored as strings (require parsing)</li>
+            <li>Multi-value fields: genres, categories, tags (JSON lists)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title slate">EDA Analyses</div>
+          <ul>
+            <li>Price vs. review score scatter</li>
+            <li>Genre &amp; tag frequency distributions</li>
+            <li>Playtime and CCU outlier detection</li>
+            <li>Free-to-play vs. paid breakdown</li>
+            <li>Review score distribution &amp; class balance</li>
+            <li>Correlation heatmap (numeric features)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title slate">Key Observations Expected</div>
+          <ul>
+            <li>Strong class imbalance (many games have no reviews)</li>
+            <li>CCU highly right-skewed &rarr; log-transform</li>
+            <li>Price near-zero spike (free-to-play majority)</li>
+            <li>High cardinality in tags/genres</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S3: PREPROCESSING ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num teal">3</span>
+      <span class="section-title">Data Preprocessing &amp; Feature Engineering</span>
+    </div>
+    <div class="section-body teal">
+      <div class="cols cols-2">
+        <div class="card">
+          <div class="card-title teal">Cleaning Steps</div>
+          <ul>
+            <li>Remove games with zero reviews (no ground truth)</li>
+            <li>Parse estimated owner ranges &rarr; midpoint numeric value</li>
+            <li>Explode multi-value genre/tag lists &rarr; binary encoding (MLB)</li>
+            <li>Handle missing prices (DLC, bundles) &rarr; median imputation or flag column</li>
+            <li>Cap extreme CCU outliers (Dota 2, CS:GO) &rarr; flag as separate category</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title teal">Feature Engineering</div>
+          <ul>
+            <li>Log-transform CCU and price for regression</li>
+            <li>Derive <em>review_ratio</em> = positive / total reviews</li>
+            <li>Binning release year into era buckets</li>
+            <li>Normalize numeric features (StandardScaler)</li>
+            <li>Top-N tag/genre selection to control dimensionality</li>
+            <li>Export cleaned data to Parquet for reproducibility</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ S4: CLASSIFICATION ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num indigo">4</span>
+      <span class="section-title">Classification &mdash; Predicting Review Outcome</span>
+    </div>
+    <div class="section-body indigo">
+      <p style="margin-bottom:6px"><strong>Target variable:</strong> Binary label derived from <em>review_ratio</em> &mdash; Positive (&ge;70% positive reviews) vs. Negative (&lt;70%) &middot; <span class="tag">Supervised</span> <span class="tag">Binary</span></p>
+      <div class="cols cols-3">
+        <div class="card">
+          <div class="card-title indigo">Baseline <span class="badge orange">Required</span></div>
+          <ul>
+            <li><strong>Majority class classifier</strong> &mdash; always predicts the dominant class</li>
+            <li>Establishes minimum performance floor</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title indigo">Symbolic Model</div>
+          <ul>
+            <li><strong>Logistic Regression</strong> (L2 regularization)</li>
+            <li>Interpretable coefficients</li>
+            <li>Fast, good baseline for imbalanced data</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title indigo">Non-Symbolic Models</div>
+          <ul>
+            <li><strong>Random Forest</strong> (feature importance)</li>
+            <li><strong>XGBoost</strong> (gradient boosting)</li>
+            <li>Handle non-linear interactions</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:6px">Metrics: F1-score (macro), AUC-ROC &middot; Class imbalance: SMOTE oversampling or class_weight='balanced'</p>
+    </div>
+  </div>
+
+  <!-- ══ S5: REGRESSION ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num purple">5</span>
+      <span class="section-title">Regression &mdash; Estimating Peak Concurrent Users</span>
+    </div>
+    <div class="section-body purple">
+      <p style="margin-bottom:6px"><strong>Target variable:</strong> <em>peak_ccu</em> (log-transformed) &middot; <span class="tag">Supervised</span> <span class="tag">Continuous</span></p>
+      <div class="cols cols-3">
+        <div class="card">
+          <div class="card-title purple">Baseline <span class="badge orange">Required</span></div>
+          <ul>
+            <li><strong>Mean value regressor</strong> &mdash; always predicts the training mean</li>
+            <li>Provides minimum RMSE benchmark</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title purple">Symbolic Model</div>
+          <ul>
+            <li><strong>Ridge Regression</strong> (L2) and <strong>Lasso</strong> (L1, implicit feature selection)</li>
+            <li>Coefficient magnitudes interpretable</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title purple">Non-Symbolic Model</div>
+          <ul>
+            <li><strong>Gradient Boosting Regressor</strong></li>
+            <li>Captures non-linear genre/tag effects on popularity</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:6px">Metrics: RMSE, MAE, R² &middot; Back-transform predictions to original scale for interpretability</p>
+    </div>
+  </div>
+
+  <!-- ══ S6: CLUSTERING ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num amber">6</span>
+      <span class="section-title">Clustering &mdash; Game Market Segmentation</span>
+    </div>
+    <div class="section-body amber">
+      <p style="margin-bottom:6px"><strong>Goal:</strong> Discover natural groupings of games based on price, genre, playtime, and review patterns &middot; <span class="tag orange">Unsupervised</span></p>
+      <div class="cols cols-2">
+        <div class="card">
+          <div class="card-title amber">Methods</div>
+          <ul>
+            <li><strong>K-Means</strong> (MiniBatch variant for scale) &mdash; partition-based</li>
+            <li><strong>DBSCAN</strong> &mdash; density-based, handles noise/outlier games</li>
+            <li>Elbow method + silhouette analysis to choose <em>k</em></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title amber">Evaluation &amp; Interpretation</div>
+          <ul>
+            <li>Silhouette score, Davies-Bouldin index</li>
+            <li>Cluster profiling: mean price, top genres, avg CCU per cluster</li>
+            <li>Visualize with PCA / t-SNE 2D projection</li>
+            <li>Assign descriptive segment labels (e.g., "AAA Action", "Indie Niche")</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ S7: EVALUATION SETUP ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num slate">7</span>
+      <span class="section-title">Evaluation Setup &mdash; CV, Tuning &amp; State-of-the-Art Comparison</span>
+    </div>
+    <div class="section-body slate">
+      <div class="cols cols-3">
+        <div class="card">
+          <div class="card-title slate">Cross-Validation</div>
+          <ul>
+            <li><strong>10-fold stratified CV</strong> for all supervised models</li>
+            <li>Stratification preserves class ratio across folds</li>
+            <li>Report mean ± std of all metrics</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title slate">Hyperparameter Tuning</div>
+          <ul>
+            <li><strong>Nested cross-validation</strong> (outer: 5-fold, inner: 3-fold grid search)</li>
+            <li>RandomizedSearchCV for XGBoost / Gradient Boost</li>
+            <li>Tuned params: depth, n_estimators, learning rate, regularization strength</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title slate">State-of-the-Art Comparison <span class="badge orange">Kaggle Required</span></div>
+          <ul>
+            <li>Compare F1 / RMSE to top Kaggle kernels and public notebooks for this dataset</li>
+            <li>Cite 2&ndash;3 reference solutions from Kaggle discussions</li>
+            <li>Discuss where our approach matches, exceeds, or falls short</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S8: ERROR ANALYSIS & DISCUSSION ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num gray">8</span>
+      <span class="section-title">Error Analysis &amp; Result Discussion</span>
+    </div>
+    <div class="section-body gray">
+      <div class="cols cols-2">
+        <div class="card">
+          <div class="card-title slate">Error Analysis</div>
+          <ul>
+            <li>Confusion matrix analysis for classification</li>
+            <li>Residual plots for regression (predicted vs. actual)</li>
+            <li>Identify systematic error patterns (e.g., model fails on niche genres)</li>
+            <li>Feature importance across all models (SHAP values for top models)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title slate">Discussion Points</div>
+          <ul>
+            <li>Class imbalance impact on classification results</li>
+            <li>Owner range ambiguity as a limitation</li>
+            <li>Survivorship bias in the Steam dataset</li>
+            <li>Cross-task consistency: do the same features matter across tasks?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S9: CONCLUSION ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num teal">9</span>
+      <span class="section-title">Conclusion &amp; Future Work</span>
+    </div>
+    <div class="section-body teal">
+      <div class="cols cols-2">
+        <div class="card">
+          <div class="card-title teal">Expected Key Findings</div>
+          <ul>
+            <li>Genre and price are likely dominant predictors for review outcome</li>
+            <li>Log-CCU regression will reveal a long-tail commercial distribution</li>
+            <li>Clustering expected to recover price-tier and genre-based segments</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title teal">Future Work</div>
+          <ul>
+            <li>Incorporate NLP on game descriptions (TF-IDF / BERT embeddings)</li>
+            <li>Temporal analysis: how review scores evolve post-launch</li>
+            <li>Collaborative filtering &rarr; game recommender system</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ══ TIMELINE ══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num" style="background:#1565c0">&#128197;</span>
+      <span class="section-title">Key Deadlines</span>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">Apr 12, 2026</div>
+        <div class="tl-label">Project Outline due (4 pages)</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Apr 15, 2026</div>
+        <div class="tl-label">Feedback Session</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">May 17, 2026</div>
+        <div class="tl-label">Final Report due (12 pages)</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">May 21, 2026</div>
+        <div class="tl-label">Presentation slides due</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TEAM SPLIT ══ -->
+  <div class="section" style="margin-top:12px">
+    <div class="section-header">
+      <span class="section-num" style="background:#1565c0">&#128101;</span>
+      <span class="section-title">Suggested Team Split (6 Members)</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Member(s)</th>
+          <th>Primary Responsibility</th>
+          <th>Sections</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Members 1 &amp; 2</td>
+          <td>Business Understanding, Data Preprocessing, EDA, Parquet pipeline</td>
+          <td>1, 2, 3</td>
+        </tr>
+        <tr>
+          <td>Member 3</td>
+          <td>Classification (all models + baseline), class imbalance handling</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>Member 4</td>
+          <td>Regression (all models + baseline), log-transform, hyperparameter tuning</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td>Member 5</td>
+          <td>Clustering, dimensionality reduction, cluster profiling</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td>Member 6</td>
+          <td>Evaluation setup, CV strategy, SotA comparison, LaTeX report assembly</td>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td>All Members</td>
+          <td>Error analysis, result discussion, conclusion, presentation</td>
+          <td>8, 9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <span>IE 500 Data Mining &middot; University of Mannheim &middot; FSS 2026</span>
+    <span>Steam Games Dataset &middot; Kaggle: fronkongames/steam-games-dataset</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IE500 – Steam Games Project Outline</title>
+<style>
+/* ── Page setup ── */
+@page {
+  size: A4;
+  margin: 22mm 25mm 22mm 25mm;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 10pt;
+  color: #000;
+  background: #fff;
+  line-height: 1.45;
+}
+
+.page {
+  width: 160mm;
+  margin: 0 auto;
+}
+
+/* ── Page breaks ── */
+.page-break { page-break-after: always; }
+
+/* ── Title block ── */
+.title-block {
+  text-align: center;
+  border-bottom: 1.5pt solid #000;
+  padding-bottom: 7pt;
+  margin-bottom: 10pt;
+}
+.title-block h1 {
+  font-size: 14pt;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  margin-bottom: 3pt;
+}
+.title-block .course {
+  font-size: 10pt;
+  margin-bottom: 2pt;
+}
+.title-block .meta {
+  font-size: 9pt;
+  color: #333;
+}
+
+/* ── Abstract box ── */
+.abstract {
+  border: 0.75pt solid #888;
+  padding: 5pt 8pt;
+  margin-bottom: 10pt;
+  font-size: 9pt;
+}
+.abstract strong { font-size: 9pt; }
+
+/* ── Section headings ── */
+h2 {
+  font-size: 10.5pt;
+  font-weight: bold;
+  border-bottom: 0.5pt solid #000;
+  padding-bottom: 1.5pt;
+  margin-top: 9pt;
+  margin-bottom: 4pt;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+h3 {
+  font-size: 10pt;
+  font-weight: bold;
+  margin-top: 6pt;
+  margin-bottom: 3pt;
+}
+
+p { margin-bottom: 4pt; font-size: 10pt; }
+
+/* ── Lists ── */
+ul, ol { padding-left: 14pt; margin-bottom: 4pt; }
+li { font-size: 10pt; margin-bottom: 1.5pt; line-height: 1.4; }
+
+/* ── Two-column grid ── */
+.cols {
+  display: grid;
+  gap: 8pt;
+  margin-bottom: 4pt;
+}
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.col-box {
+  border: 0.5pt solid #bbb;
+  padding: 4pt 6pt;
+  border-radius: 2pt;
+}
+.col-box strong {
+  display: block;
+  font-size: 9.5pt;
+  margin-bottom: 2pt;
+  border-bottom: 0.5pt solid #ddd;
+  padding-bottom: 1pt;
+}
+
+/* ── Table ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin-top: 4pt;
+  margin-bottom: 4pt;
+}
+th {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 3pt 6pt;
+  text-align: left;
+  font-weight: bold;
+  font-size: 9pt;
+}
+td {
+  padding: 3pt 6pt;
+  border: 0.5pt solid #ccc;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f9f9f9; }
+
+/* ── Small note / caption ── */
+.note {
+  font-size: 8.5pt;
+  color: #444;
+  font-style: italic;
+  margin-top: 2pt;
+}
+
+/* ── Inline highlight ── */
+.req {
+  font-size: 8pt;
+  font-weight: bold;
+  font-style: normal;
+  border: 0.5pt solid #888;
+  padding: 0 3pt;
+  border-radius: 2pt;
+  color: #333;
+}
+
+/* ── Footer ── */
+.footer {
+  font-size: 8pt;
+  color: #555;
+  text-align: center;
+  border-top: 0.5pt solid #aaa;
+  padding-top: 4pt;
+  margin-top: 8pt;
+}
+
+/* ── AI declaration box ── */
+.ai-box {
+  border: 0.75pt solid #555;
+  background: #f9f9f9;
+  padding: 5pt 8pt;
+  margin-top: 8pt;
+  font-size: 9pt;
+}
+
+/* ── Print ── */
+@media print {
+  body { font-size: 10pt; }
+  .page { width: auto; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 1
+     ══════════════════════════════════════════════════════ -->
+
+<!-- TITLE -->
+<div class="title-block">
+  <h1>Predicting Game Success and Discovering Market Segments<br>on the Steam Platform</h1>
+  <div class="course">IE 500 Data Mining — Project Outline &nbsp;|&nbsp; University of Mannheim, FSS 2026</div>
+  <div class="meta">
+    Team Members: [Member 1] &nbsp;&middot;&nbsp; [Member 2] &nbsp;&middot;&nbsp; [Member 3] &nbsp;&middot;&nbsp;
+    [Member 4] &nbsp;&middot;&nbsp; [Member 5] &nbsp;&middot;&nbsp; [Member 6]<br>
+    Submission Date: April 12, 2026
+  </div>
+</div>
+
+<!-- ABSTRACT -->
+<div class="abstract">
+  <strong>Abstract.</strong>
+  This project applies data mining and machine learning techniques to a dataset of approximately 120,000 Steam games
+  sourced from Kaggle. We pursue three complementary analytical tasks: (1) a binary <em>classification</em> task predicting
+  whether a game will receive a positive overall review outcome, (2) a <em>regression</em> task estimating peak concurrent
+  users as a proxy for commercial success, and (3) an unsupervised <em>clustering</em> task to discover natural game
+  market segments. Each task employs symbolic models, non-symbolic models, and a naive baseline, evaluated under
+  10-fold stratified cross-validation. Results will be compared against publicly available Kaggle solutions.
+</div>
+
+<!-- S1 -->
+<h2>1. Business Understanding</h2>
+<p>
+  The Steam marketplace hosts over 50,000 active titles, making it one of the most competitive digital distribution
+  platforms in the world. Game developers and publishers routinely face high-stakes decisions about genre, pricing,
+  and release timing with limited quantitative guidance. This project addresses three concrete business questions
+  derived from the available data:
+</p>
+<ul>
+  <li><strong>Reception prediction:</strong> Can we predict, from a game's attributes (genre, price, developer history, tags), whether it will receive a predominantly positive or negative review outcome?</li>
+  <li><strong>Popularity estimation:</strong> Can we estimate peak concurrent user counts — a measure of commercial reach — from observable game features?</li>
+  <li><strong>Market segmentation:</strong> What natural clusters of games exist in the Steam catalogue, and how do these segments differ in price, playtime, and audience size?</li>
+</ul>
+<p>
+  Answers to these questions can inform data-driven publishing strategy, competitive positioning, and pricing decisions
+  for new game releases.
+</p>
+
+<!-- S2 -->
+<h2>2. Dataset Description</h2>
+<p>
+  The dataset used is the <em>Steam Games Dataset</em> published by FronkonGames on Kaggle
+  (<tt>fronkongames/steam-games-dataset</tt>), last updated in 2024. It contains metadata for approximately
+  <strong>120,000 Steam game entries</strong> retrieved via the Steam API and SteamSpy.
+</p>
+<div class="cols cols-2">
+  <div class="col-box">
+    <strong>Key Features Available</strong>
+    <ul>
+      <li>Price (USD), release date, developer, publisher</li>
+      <li>Genres, categories, user-defined tags (multi-value)</li>
+      <li>Positive and negative review counts</li>
+      <li>Peak concurrent users (CCU), average playtime</li>
+      <li>Estimated owner range (e.g., "50,000–100,000")</li>
+      <li>Supported platforms, languages, age rating</li>
+    </ul>
+  </div>
+  <div class="col-box">
+    <strong>Known Data Challenges</strong>
+    <ul>
+      <li>Owner counts stored as string ranges, not exact numbers</li>
+      <li>Genres and tags stored as JSON lists — require parsing</li>
+      <li>Large class imbalance: majority of games have zero or very few reviews</li>
+      <li>Heavy right skew in CCU (a few titles dominate)</li>
+      <li>Many free-to-play games with atypical price distributions</li>
+    </ul>
+  </div>
+</div>
+<p class="note">
+  Since this is a Kaggle dataset, results will be compared against publicly available kernels and notebooks, as required by the IE500 project guidelines.
+</p>
+
+<!-- S3 -->
+<h2>3. Exploratory Data Analysis</h2>
+<p>
+  Prior to modelling, we will conduct a structured exploratory analysis to characterise the dataset and motivate
+  preprocessing decisions. Planned analyses include:
+</p>
+<ul>
+  <li>Distribution of review ratios (positive / total) and class balance assessment</li>
+  <li>Price distribution stratified by free-to-play vs. paid games</li>
+  <li>Frequency distribution of top-50 genres and user-defined tags</li>
+  <li>Scatter plots of price vs. review ratio, and log-CCU vs. playtime</li>
+  <li>Pearson correlation heatmap across all numeric features</li>
+  <li>Identification of outliers in CCU and playtime using box plots and IQR method</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 2
+     ══════════════════════════════════════════════════════ -->
+
+<!-- S4 -->
+<h2>4. Data Preprocessing and Feature Engineering</h2>
+<p>All preprocessing steps will be applied consistently across all three tasks. The cleaned dataset will be exported
+to Parquet format to ensure reproducibility.</p>
+
+<div class="cols cols-2">
+  <div class="col-box">
+    <strong>Cleaning Steps</strong>
+    <ul>
+      <li>Remove games with zero total reviews (no ground truth available for supervised tasks)</li>
+      <li>Parse estimated owner ranges to numeric midpoints (e.g., "50k–100k" → 75,000)</li>
+      <li>Explode multi-value genre and tag lists into binary indicator columns using Multi-Label Binarizer</li>
+      <li>Apply median imputation for missing prices (DLC / bundle anomalies)</li>
+      <li>Cap or flag extreme CCU outliers (e.g., Dota 2, CS:GO) to limit leverage</li>
+    </ul>
+  </div>
+  <div class="col-box">
+    <strong>Feature Engineering</strong>
+    <ul>
+      <li>Derive <em>review_ratio</em> = positive reviews / total reviews</li>
+      <li>Binarise review_ratio at threshold 0.70 to produce classification target label</li>
+      <li>Log-transform peak_ccu and price to reduce right skew for regression</li>
+      <li>Bin release year into era buckets (pre-2010, 2010–2015, 2016–2019, 2020+)</li>
+      <li>Retain top-50 tags by frequency to control feature dimensionality</li>
+      <li>Standardise all continuous features using StandardScaler</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S5 -->
+<h2>5. Task 1 — Classification: Predicting Review Outcome</h2>
+
+<h3>5.1 Task Formulation</h3>
+<p>
+  The target variable is a binary label derived from <em>review_ratio</em>:
+  <strong>Positive</strong> (≥ 70% positive reviews) and <strong>Negative</strong> (< 70%).
+  This threshold is consistent with Steam's own "Mostly Positive" boundary. Class imbalance will be
+  addressed using SMOTE oversampling on the training folds and the <tt>class_weight='balanced'</tt>
+  parameter where applicable.
+</p>
+
+<h3>5.2 Models</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Type</th>
+      <th>Justification</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Majority Class Classifier</strong></td>
+      <td><span class="req">Baseline</span></td>
+      <td>Always predicts the dominant class. Establishes the minimum performance floor that all other models must exceed.</td>
+    </tr>
+    <tr>
+      <td><strong>Logistic Regression</strong> (L2)</td>
+      <td><span class="req">Symbolic</span></td>
+      <td>Linear, interpretable model. Coefficient magnitudes reveal which features most influence review outcome.</td>
+    </tr>
+    <tr>
+      <td><strong>Random Forest</strong></td>
+      <td><span class="req">Non-Symbolic</span></td>
+      <td>Ensemble of decision trees. Handles non-linear interactions between genre, price, and tags. Provides feature importances.</td>
+    </tr>
+    <tr>
+      <td><strong>XGBoost</strong></td>
+      <td><span class="req">Non-Symbolic</span></td>
+      <td>Gradient-boosted trees. Expected to achieve highest accuracy; hyperparameter tuning via nested CV.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>5.3 Evaluation Metrics</h3>
+<p>
+  Primary metric: <strong>macro F1-score</strong> (accounts for class imbalance across both labels).
+  Secondary metric: <strong>AUC-ROC</strong> (measures discriminative ability irrespective of threshold).
+  Both metrics reported as mean ± standard deviation across 10 folds.
+</p>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 3
+     ══════════════════════════════════════════════════════ -->
+
+<!-- S6 -->
+<h2>6. Task 2 — Regression: Estimating Peak Concurrent Users</h2>
+
+<h3>6.1 Task Formulation</h3>
+<p>
+  The target variable is <strong>log₁₀(peak_ccu + 1)</strong>, the log-transformed peak concurrent user count.
+  Log-transformation is applied because CCU is heavily right-skewed: a handful of titles (e.g., Dota 2, CS:GO)
+  have orders-of-magnitude more players than the median game. The log scale compresses this range and makes
+  linear relationships more learnable. Predictions will be back-transformed to the original scale for interpretation.
+</p>
+
+<h3>6.2 Models</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Type</th>
+      <th>Justification</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Mean Value Regressor</strong></td>
+      <td><span class="req">Baseline</span></td>
+      <td>Always predicts the training set mean. Provides a naive RMSE benchmark that all models must beat.</td>
+    </tr>
+    <tr>
+      <td><strong>Ridge Regression</strong> (L2) <br><strong>Lasso Regression</strong> (L1)</td>
+      <td><span class="req">Symbolic</span></td>
+      <td>Linear models with regularisation. Lasso performs implicit feature selection by shrinking irrelevant coefficients to zero. Interpretable coefficients reveal which features drive CCU.</td>
+    </tr>
+    <tr>
+      <td><strong>Gradient Boosting Regressor</strong></td>
+      <td><span class="req">Non-Symbolic</span></td>
+      <td>Sequential ensemble model that iteratively corrects residuals. Captures complex non-linear relationships between genre, price, and player counts.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>6.3 Evaluation Metrics</h3>
+<p>
+  Primary metric: <strong>RMSE</strong> (root mean squared error, on the log scale).
+  Secondary metrics: <strong>MAE</strong> and <strong>R²</strong>.
+  Residual plots (predicted vs. actual log-CCU) will be analysed to identify systematic biases.
+</p>
+
+<!-- S7 -->
+<h2>7. Task 3 — Clustering: Game Market Segmentation</h2>
+
+<h3>7.1 Task Formulation</h3>
+<p>
+  This unsupervised task aims to discover natural groupings of games based on their commercial and gameplay
+  characteristics, without using any predefined labels. Input features will include: log-price, log-CCU,
+  average playtime, review_ratio, and binary genre/tag indicators (top-30 by frequency). All features will be
+  standardised prior to clustering.
+</p>
+
+<h3>7.2 Methods</h3>
+<div class="cols cols-2">
+  <div class="col-box">
+    <strong>K-Means (MiniBatch variant)</strong>
+    <ul>
+      <li>Partition-based algorithm; computationally efficient on 100k+ records</li>
+      <li>Optimal <em>k</em> selected via elbow method and silhouette analysis (range: k = 3–12)</li>
+    </ul>
+  </div>
+  <div class="col-box">
+    <strong>DBSCAN</strong>
+    <ul>
+      <li>Density-based algorithm; does not require specifying <em>k</em> in advance</li>
+      <li>Naturally identifies noise points (games that belong to no cluster)</li>
+      <li>Parameters ε and minPts tuned via k-distance graph</li>
+    </ul>
+  </div>
+</div>
+
+<h3>7.3 Evaluation and Interpretation</h3>
+<p>
+  Internal validation metrics: <strong>Silhouette score</strong> and <strong>Davies-Bouldin index</strong>.
+  Cluster profiles will be generated by computing the mean value of each feature per cluster, and
+  descriptive segment labels assigned (e.g., "Free-to-Play Competitive", "Premium Indie", "Casual Puzzle").
+  Clusters will be visualised in 2D using PCA projection.
+</p>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE 4
+     ══════════════════════════════════════════════════════ -->
+
+<!-- S8 -->
+<h2>8. Evaluation Methodology</h2>
+
+<h3>8.1 Cross-Validation Strategy</h3>
+<p>
+  All supervised models (Tasks 1 and 2) will be evaluated using <strong>10-fold stratified cross-validation</strong>.
+  Stratification ensures that the class ratio (for classification) or the CCU distribution (for regression,
+  via quantile-based stratification) is preserved across all folds. No test data is ever used during training or tuning.
+</p>
+
+<h3>8.2 Hyperparameter Optimisation</h3>
+<p>
+  Hyperparameter selection will follow a <strong>nested cross-validation</strong> procedure to avoid
+  overfitting to the validation set. The outer loop (5-fold) estimates generalisation performance; the inner
+  loop (3-fold grid/random search) selects the best hyperparameter configuration. Key parameters to tune:
+</p>
+<ul>
+  <li><strong>Random Forest / XGBoost:</strong> n_estimators, max_depth, min_samples_leaf, learning rate (XGB), subsample ratio</li>
+  <li><strong>Ridge / Lasso:</strong> regularisation strength α (log-scale grid: 10⁻³ to 10³)</li>
+  <li><strong>Gradient Boosting:</strong> n_estimators, max_depth, learning rate, min_samples_split</li>
+</ul>
+
+<h3>8.3 State-of-the-Art Comparison <span class="req">Required — Kaggle Dataset</span></h3>
+<p>
+  Because the dataset is published on Kaggle, the IE500 guidelines require that results be compared against
+  publicly available solutions. We will identify 2–3 reference notebooks from Kaggle's public kernel section
+  for this dataset and compare our F1, RMSE, and R² scores against their reported values. Differences will
+  be explained in terms of feature engineering choices, model complexity, and dataset filtering decisions.
+</p>
+
+<!-- S9 -->
+<h2>9. Expected Results</h2>
+<ul>
+  <li><strong>Classification:</strong> We expect XGBoost to outperform Logistic Regression and both to clearly exceed the majority-class baseline. Genre and review_ratio-derived features are hypothesised to be the strongest predictors.</li>
+  <li><strong>Regression:</strong> CCU prediction is inherently noisy; we expect moderate R² (0.35–0.55) given the stochastic nature of game popularity. Gradient Boosting is expected to outperform Ridge/Lasso.</li>
+  <li><strong>Clustering:</strong> We expect 4–7 meaningful clusters aligned with broad market tiers (e.g., AAA paid, free-to-play competitive, budget indie, narrative/niche). DBSCAN is expected to isolate viral outlier games as noise points.</li>
+</ul>
+
+<!-- S10 -->
+<h2>10. Work Packages and Timeline</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Member(s)</th>
+      <th>Responsibility</th>
+      <th>Milestone</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Members 1 &amp; 2</td>
+      <td>Dataset loading, EDA, preprocessing pipeline, Parquet export</td>
+      <td>Apr 26</td>
+    </tr>
+    <tr>
+      <td>Member 3</td>
+      <td>Classification models, SMOTE, hyperparameter tuning, error analysis</td>
+      <td>May 4</td>
+    </tr>
+    <tr>
+      <td>Member 4</td>
+      <td>Regression models, log-transform, residual analysis, SotA comparison</td>
+      <td>May 4</td>
+    </tr>
+    <tr>
+      <td>Member 5</td>
+      <td>Clustering, PCA visualisation, cluster profiling, evaluation metrics</td>
+      <td>May 4</td>
+    </tr>
+    <tr>
+      <td>Member 6</td>
+      <td>CV framework, nested tuning setup, LaTeX report assembly</td>
+      <td>May 10</td>
+    </tr>
+    <tr>
+      <td>All Members</td>
+      <td>Error analysis, result discussion, conclusion, presentation slides</td>
+      <td>May 17</td>
+    </tr>
+  </tbody>
+</table>
+<p class="note" style="margin-top:4pt">
+  Key deadlines: Project outline — Apr 12 &nbsp;|&nbsp; Feedback session — Apr 15 &nbsp;|&nbsp;
+  Final report — May 17 &nbsp;|&nbsp; Presentation slides — May 21 &nbsp;|&nbsp; Final exam — Jun 11
+</p>
+
+<!-- AI DECLARATION -->
+<div class="ai-box">
+  <strong>Declaration of AI Tool Usage</strong><br>
+  In preparing this project outline, AI-assisted tools (including large language model assistants) were used
+  for structuring the document and suggesting relevant preprocessing and modelling techniques. All content
+  has been reviewed, adapted, and verified by the team members. Final decisions regarding methodology,
+  task framing, and evaluation design were made by the team.
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  IE 500 Data Mining &nbsp;|&nbsp; University of Mannheim, FSS 2026 &nbsp;|&nbsp;
+  Steam Games Dataset (Kaggle: fronkongames/steam-games-dataset) &nbsp;|&nbsp; Page 4 of 4
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>

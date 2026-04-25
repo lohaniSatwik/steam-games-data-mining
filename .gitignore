@@ -1,8 +1,13 @@
 # Virtual environment
 Code/.venv/
 
-# Raw data (372MB — too large for GitHub, download from Kaggle)
+# Raw data (too large for GitHub, download from Kaggle)
 Code/Data/games.csv
+Code/Data/games.json
+
+# University course materials (not part of the project)
+Exercise/
+Lecture/
 
 # OS files
 .DS_Store
