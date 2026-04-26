@@ -6,9 +6,7 @@ Code/Data/games.csv
 Code/Data/games.json
 
 # Generated files — run run_preprocessing.py to reproduce locally
-# (games_processed.csv is committed as it is only 18MB)
-Code/Data/processed/X_classification.csv
-Code/Data/processed/y_classification.csv
+Code/Data/processed/
 
 # University course materials (not part of the project)
 Exercise/

@@ -19,11 +19,12 @@ Beyond prediction, we use SHAP values and feature importances to identify which 
 ```
 steam-games-data-mining/
 │
+├── Datasets/                               # Cleaned, model-ready data
+│   ├── games_processed.csv                 # Full preprocessed dataset (56,655 × 152)
+│   ├── train.csv                           # 80% split — for model training
+│   └── test.csv                            # 20% split — for model evaluation
+│
 ├── Code/
-│   ├── Data/
-│   │   └── processed/
-│   │       └── games_processed.csv         # Cleaned, model-ready dataset (18MB)
-│   │
 │   ├── section1_business_understanding.ipynb
 │   ├── section2_preprocessing.ipynb
 │   ├── run_preprocessing.py
@@ -60,16 +61,28 @@ source .venv/bin/activate
 pip install pandas numpy matplotlib seaborn scikit-learn
 ```
 
-### 3. Load the processed data in your notebook
+### 3. Load the data in your notebook
 
-`games_processed.csv` is already in the repo — no preprocessing needed. Just load it:
+All datasets are in the `Datasets/` folder at the root of the repo.
 
+**For EDA** (full dataset):
 ```python
 import pandas as pd
 
-df = pd.read_csv('Data/processed/games_processed.csv')
+df = pd.read_csv('../Datasets/games_processed.csv')
 X  = df.drop(columns=['label'])
 y  = df['label']
+```
+
+**For Modelling** (pre-split):
+```python
+import pandas as pd
+
+train = pd.read_csv('../Datasets/train.csv')
+test  = pd.read_csv('../Datasets/test.csv')
+
+X_train, y_train = train.drop(columns=['label']), train['label']
+X_test,  y_test  = test.drop(columns=['label']),  test['label']
 ```
 
 ---
