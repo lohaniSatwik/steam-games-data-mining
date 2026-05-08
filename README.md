@@ -8,7 +8,7 @@ Satwik Kumar Lohani · Arpitha Shivaprasad Kori · Zubair Ashfaq · Beyza Ünlü
 
 ## Project Overview
 
-This project applies data mining and machine learning to a dataset of ~122,000 Steam games. The goal is to **predict whether a game will receive a positive or negative review outcome** (binary classification: Good / Bad) based on its observable metadata attributes such as genre, price, tags, and platform availability.
+This project applies data mining and machine learning to a dataset of ~122,000 Steam games. The goal is to **predict whether a game will be well-received, mixed, or poorly-received** (multiclass classification: Good / Mixed / Bad) based on observable metadata such as genre, price, tags, and platform availability.
 
 Beyond prediction, we use SHAP values and feature importances to identify which game attributes most strongly drive positive reception.
 
@@ -20,9 +20,8 @@ Beyond prediction, we use SHAP values and feature importances to identify which 
 steam-games-data-mining/
 │
 ├── Datasets/                               # Cleaned, model-ready data
-│   ├── games_processed.csv                 # Full preprocessed dataset (56,655 × 152)
-│   ├── train.csv                           # 80% split — for model training
-│   └── test.csv                            # 20% split — for model evaluation
+│   ├── train_multiclass.csv                # 80% split — for model training (45,324 × 148)
+│   └── test_multiclass.csv                 # 20% split — for model evaluation (11,331 × 148)
 │
 ├── Code/
 │   ├── section1_business_understanding.ipynb
@@ -58,43 +57,36 @@ python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
 
-pip install pandas numpy matplotlib seaborn scikit-learn
+pip install pandas numpy matplotlib seaborn scikit-learn xgboost
 ```
 
 ### 3. Load the data in your notebook
 
 All datasets are in the `Datasets/` folder at the root of the repo.
 
-**For EDA** (full dataset):
-```python
-import pandas as pd
-
-df = pd.read_csv('../Datasets/games_processed.csv')
-X  = df.drop(columns=['label'])
-y  = df['label']
-```
-
 **For Modelling** (pre-split):
 ```python
 import pandas as pd
 
-train = pd.read_csv('../Datasets/train.csv')
-test  = pd.read_csv('../Datasets/test.csv')
+train = pd.read_csv('../Datasets/train_multiclass.csv')
+test  = pd.read_csv('../Datasets/test_multiclass.csv')
 
-X_train, y_train = train.drop(columns=['label']), train['label']
-X_test,  y_test  = test.drop(columns=['label']),  test['label']
+X_train, y_train = train.drop(columns=['label_multiclass']), train['label_multiclass']
+X_test,  y_test  = test.drop(columns=['label_multiclass']),  test['label_multiclass']
 ```
 
 ---
 
-## About the Processed Dataset
+## About the Dataset
 
 | Property | Value |
 |----------|-------|
-| Games | 56,655 (filtered to ≥10 reviews) |
-| Features | 151 (numeric + binary dummies) |
-| Label | `label` — 1 = Good (≥70% positive), 0 = Bad |
-| Class balance | 71.4% Good / 28.6% Bad |
+| Total games | 56,655 (filtered to ≥10 reviews) |
+| Train set | 45,324 rows (80%) |
+| Test set | 11,331 rows (20%) |
+| Features | 147 (numeric + binary dummies) |
+| Label | `label_multiclass` — Good / Mixed / Bad |
+| Class balance (train) | Good: 63.3% / Mixed: 28.3% / Bad: 8.4% |
 | Missing values | None (median imputed) |
 | Scaling | Not applied — scale inside your CV pipeline |
 
@@ -105,7 +97,7 @@ X_test,  y_test  = test.drop(columns=['label']),  test['label']
 - 50 tag dummy columns (`tag_*`) — top 50 by frequency
 - 3 release era columns (`era_*`)
 
-> **Note on potential leakage:** `Average playtime forever`, `Median playtime forever`, and `Recommendations` are post-release metrics — a game accumulates these *after* it has already been reviewed. They are included for now but consider running your model with and without them to compare the impact.
+> **Note on potential leakage:** `Average playtime forever`, `Median playtime forever`, and `Recommendations` are post-release metrics. They are included for now — consider running your model with and without them to compare the impact.
 
 ---
 
@@ -115,16 +107,18 @@ X_test,  y_test  = test.drop(columns=['label']),  test['label']
 |---------|-------|----------|
 | Preprocessing | Satwik Kumar Lohani | `section2_preprocessing.ipynb` |
 | EDA | Arpitha Shivaprasad Kori | `section3_eda.ipynb` |
-| Baseline + Logistic Regression | Zubair Ashfaq | `section4a_logistic.ipynb` |
+| Logistic Regression | Zubair Ashfaq | `section4a_logistic.ipynb` |
 | Random Forest | Beyza Ünlü | `section4b_random_forest.ipynb` |
-| XGBoost + Hyperparameter Tuning | Muhammad Sameer Siddiqui | `section4c_xgboost.ipynb` |
+| XGBoost | Muhammad Sameer Siddiqui | `section4c_xgboost.ipynb` |
 | Evaluation, SHAP & Report | Esha Raheel | `section5_evaluation.ipynb` |
 
 ---
 
 ## Modelling Notes
 
-- **Evaluation metric:** Macro F1-score (primary), AUC-ROC and Precision-Recall AUC (secondary)
-- **Cross-validation:** 10-fold stratified CV (outer loop); 3-fold inner loop for hyperparameter tuning
-- **Class imbalance:** 71.4% Good / 28.6% Bad — use `class_weight='balanced'` and SMOTE
+- **Task:** Multiclass classification — Good / Mixed / Bad
+- **Evaluation metric:** Macro F1-score (primary), Precision and Recall per class (secondary)
+- **Cross-validation:** 10-fold stratified outer loop; 3-fold inner loop for hyperparameter tuning
+- **Class imbalance:** Use `class_weight='balanced'` inside your model — do NOT oversample the training data before CV
 - **Scaling:** Apply `StandardScaler` inside each model's `sklearn.Pipeline` on the continuous columns: `log_price`, `Required age`, `DiscountDLC count`, `Achievements`, `Average playtime forever`, `Median playtime forever`, `Recommendations`, `Metacritic score`, `n_languages`
+- **Test set:** Only evaluate on `test_multiclass.csv` once, at the very end
