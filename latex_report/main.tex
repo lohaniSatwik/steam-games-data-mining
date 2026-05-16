@@ -191,6 +191,10 @@ discriminative power, which contributes to the observed performance ceiling.
 The preprocessing pipeline was applied identically to both threshold versions of the dataset.
 
 \begin{itemize}
+  \item \textbf{Duplicate and validity checks.} Exact-duplicate rows were identified
+        and removed (fewer than 0.1\,\% of records).
+        Numeric columns were validated for range plausibility
+        (e.g.\ negative prices or review counts set to zero were flagged and corrected).
   \item \textbf{Row-alignment fix.} The raw CSV had misaligned rows caused by unparsed
         text fields; corrected before any downstream processing.
   \item \textbf{Numeric conversion.} Peak CCU, Positive, Negative, Price, Achievements,
@@ -248,8 +252,8 @@ inside each model's pipeline.
 \subsection{Models trained}
 Seven models were trained and compared
 (Table~\ref{tab:models}).
-A majority-class classifier (always predicts \textit{Good}) gives Macro F1 $\approx 0.21$
-and serves as the lower bound.
+A majority-class classifier (always predicts \textit{Good}) gives Macro F1 $\approx 0.26$
+(Good F1 = 0.775, Mixed = Bad = 0) and serves as the lower bound.
 
 \begin{table}[H]
   \centering\small
@@ -275,6 +279,9 @@ and serves as the lower bound.
       C=0.1, L2 \\
     LR + ROS             & 0.4376 & 0.0038 & 0.4352 & 0.70 & 0.33 & 0.28 &
       C=0.01 \\
+    \midrule
+    Majority class (Good)& ---    & ---    & 0.2583 & 0.78 & 0.00 & 0.00 &
+      always predict Good \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -319,6 +326,37 @@ A 15,000-sample stratified subsample was required for tractable training.
 SMOTE (+0.029) is the only strategy that provides a meaningful gain; it creates
 synthetic minority samples via interpolation, giving the model genuinely new patterns.
 ROS (random duplication) adds no information and matches the baseline.
+
+\subsection{Symbolic model interpretation: Logistic Regression}
+\label{sec:lr_interp}
+
+Logistic Regression (LR) is the interpretable symbolic baseline.
+With L2 regularisation (C\,=\,0.1) and \texttt{class\_weight=`balanced'}, it learns a
+linear decision boundary in the 147-feature space -- making its coefficients directly
+readable as feature contributions.
+
+Inspecting the LR coefficients for the \textit{Good} class (multinomial one-vs-rest)
+shows a pattern consistent with the feature-separation analysis (Section~\ref{sec:evaluation}):
+\begin{itemize}
+  \item \textbf{Strongest positive predictors (Good):}
+        \ttf{era\_2020+}, \ttf{cat\_Steam Cloud}, \ttf{tag\_2D},
+        \ttf{tag\_Singleplayer}, \ttf{cat\_Full controller support}.
+        These align with the top Good$-$Mixed feature differences ($+$0.13 to $+$0.17),
+        confirming that modern, polished, singleplayer games skew positive.
+  \item \textbf{Strongest negative predictors (against Good):}
+        \ttf{era\_pre-2015}, high \ttf{log\_price} without tag support, and
+        categories associated with early access or DLC-heavy monetisation
+        (\ttf{cat\_Downloadable Content}). Older era games have lower review ratios
+        on average; premium-priced games without community tags also tend to
+        receive more critical reception.
+\end{itemize}
+
+LR achieves Test Macro F1\,=\,0.4355 versus RF's 0.5100.
+The gap reflects the non-linear nature of the classification boundary: many features
+interact multiplicatively (e.g.\ a 2D game released in 2020+ is disproportionately
+Good, but neither \ttf{tag\_2D} nor \ttf{era\_2020+} alone carries the same signal).
+LR cannot model this interaction; RF splits on joint combinations and therefore
+captures it directly.
 
 % ============================================================
 \section{Threshold Experiment}
@@ -433,21 +471,20 @@ feature-space blind spot rather than simple boundary uncertainty.
 
 \begin{figure}[H]
   \centering
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\linewidth]{figures/fig06_rf_importance.png}
-    \caption{Top-25 RF feature importances (Gini).}
-    \label{fig:rf_importance}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.48\linewidth}
-    \includegraphics[width=\linewidth]{figures/fig15c_feat_separation.png}
-    \caption{Mean feature difference: Good $-$ Mixed.}
-    \label{fig:feat_sep}
-  \end{subfigure}
-  \caption{Left: RF uses price, achievements, and release-era features most.
-           Right: the most separating Good--Mixed features have modest absolute
-           differences ($<0.18$), confirming limited class separation.}
-  \label{fig:importance_sep}
+  \includegraphics[width=0.70\linewidth]{figures/fig06_rf_importance.png}
+  \caption{Top-25 RF feature importances (Gini). Price, achievements, and
+           release-era features dominate; individual tag/category indicators
+           have lower but collectively significant importance.}
+  \label{fig:rf_importance}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{figures/fig15c_feat_separation.png}
+  \caption{Mean feature difference Good $-$ Mixed for the top separating features.
+           The strongest signal (\ttf{tag\_2D}, $+$0.172) is modest,
+           confirming limited class separation in the feature space.}
+  \label{fig:feat_sep}
 \end{figure}
 
 Top separating features (mean Good $-$ mean Mixed): \ttf{tag\_2D}\,(+0.172),
@@ -539,7 +576,7 @@ Prior analyses on the same Kaggle dataset report binary classification accuracy
 (Good vs.\ Bad) in the 0.70--0.80 range using simple feature sets \cite{fronkon2024}.
 Our multiclass formulation is strictly harder; Macro F1 = 0.51 on three imbalanced
 classes corresponds to meaningful discrimination well above a majority-class
-baseline (Macro F1 $\approx$ 0.21).
+baseline (Macro F1 $\approx$ 0.26).
 
 \paragraph{Limitations.}
 (1) The safe feature set avoids leakage but excludes the most predictive post-release
